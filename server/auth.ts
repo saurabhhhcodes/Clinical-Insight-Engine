@@ -1,7 +1,6 @@
 import { Router, type Request, type Response, type NextFunction } from "express";
 import { randomInt, randomBytes, scryptSync, timingSafeEqual } from "crypto";
-import bcrypt from "bcrypt";
-import { rateLimit } from "express-rate-limit";
+import rateLimit, { ipKeyGenerator } from "express-rate-limit";
 import { eq, and, gte } from "drizzle-orm";
 import { storage } from "./storage";
 import { getDb } from "./db";
@@ -11,6 +10,7 @@ import { sendVerificationCode } from "./email";
 declare module "express-session" {
   interface SessionData {
     user?: {
+      id: string;
       email: string;
       name: string;
     };
@@ -24,7 +24,21 @@ interface RegisteredUser {
   licenseNumber: string;
 }
 
-// removed duplicated functions
+const SALT_LENGTH = 32;
+const KEY_LENGTH = 64;
+
+function hashPassword(password: string): string {
+  const salt = randomBytes(SALT_LENGTH).toString("hex");
+  const hash = scryptSync(password, salt, KEY_LENGTH).toString("hex");
+  return `${salt}:${hash}`;
+}
+
+function verifyPassword(password: string, stored: string): boolean {
+  const [salt, key] = stored.split(":");
+  const expected = Buffer.from(key, "hex");
+  const hash = scryptSync(password, salt, KEY_LENGTH);
+  return hash.length === expected.length && timingSafeEqual(hash, expected);
+}
 
 /**
  * In-memory store for registered users.
@@ -192,7 +206,6 @@ export function createAuthRouter(): Router {
       return res.status(400).json({ message: "Password must be at least 8 characters." });
     }
 
-    // Check DB for existing user
     try {
       const db = getDb();
       const [existingDbUser] = await db
@@ -204,12 +217,6 @@ export function createAuthRouter(): Router {
       if (existingDbUser) {
         return res.status(409).json({ message: "An account with this email already exists." });
       }
-    registeredUsers.set(email, {
-      fullName,
-      email,
-      passwordHash: hashPassword(password),
-      licenseNumber: licenseNumber,
-    });
 
       const passwordHash = hashPassword(password);
 
@@ -246,10 +253,18 @@ export function createAuthRouter(): Router {
         attemptCount: 0,
       });
 
-    // In production, send OTP via email. For development, return it in the response.
-    logDevOtp(email, otp);
+      await sendVerificationCode(email, otp);
+      logDevOtp(email, otp);
 
-    return res.status(201).json({ success: true, pendingEmail: email, ...(process.env.NODE_ENV !== "production" && { devOtp: otp }) });
+      return res.status(201).json({
+        success: true,
+        pendingEmail: email,
+        ...(process.env.NODE_ENV !== "production" && { devOtp: otp }),
+      });
+    } catch (err) {
+      console.error("Registration error:", err);
+      return res.status(500).json({ message: "Registration failed due to a server error." });
+    }
   });
 
   /**
@@ -268,29 +283,27 @@ export function createAuthRouter(): Router {
     const devEmail = process.env.DEV_CLINICIAN_EMAIL || "";
     const devPassword = process.env.DEV_CLINICIAN_PASSWORD || "";
 
-    let userName: string | null = null;
+    let userFullName: string | null = null;
 
     if (email === devEmail && password === devPassword) {
-      userName = "Dr. Smith";
+      userFullName = "Dr. Smith";
     } else {
-      // Check in-memory store (legacy)
-      const registeredUser = registeredUsers.get(email);
-      if (registeredUser && verifyPassword(password, registeredUser.passwordHash)) {
-        userFullName = registeredUser.fullName;
-      }
+      try {
+        const db = getDb();
+        const [dbUser] = await db
+          .select()
+          .from(users)
+          .where(eq(users.email, email))
+          .limit(1);
 
-      // Also check DB
-      if (!userFullName) {
-        try {
-          const db = getDb();
-          const [dbUser] = await db
-            .select()
-            .from(users)
-            .where(eq(users.email, email))
-            .limit(1);
+        if (dbUser && verifyPassword(password, dbUser.passwordHash)) {
+          userFullName = dbUser.fullName;
+        }
 
-          if (dbUser && verifyPassword(password, dbUser.passwordHash)) {
-            userFullName = dbUser.fullName;
+        if (!userFullName) {
+          const registeredUser = registeredUsers.get(email);
+          if (registeredUser && verifyPassword(password, registeredUser.passwordHash)) {
+            userFullName = registeredUser.fullName;
           }
         }
       } catch (_err) {
@@ -346,9 +359,7 @@ export function createAuthRouter(): Router {
 
     pendingOtps.delete(email);
 
-    const registeredUser = registeredUsers.get(email);
     const devEmail = process.env.DEV_CLINICIAN_EMAIL || "";
-    const name = email === devEmail ? "Dr. Smith" : (registeredUser?.fullName ?? email);
 
     let id: string;
     let name: string;
