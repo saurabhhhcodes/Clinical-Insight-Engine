@@ -30,7 +30,9 @@ export function AppLayout({ children }: AppLayoutProps) {
           </div>
           <div>
             <h1 className="text-lg font-bold leading-tight">CardioGuard</h1>
-            <p className="text-xs text-muted-foreground font-medium">Preventive Risk Tool</p>
+            <p className="text-xs text-muted-foreground font-medium">
+              Preventive Risk Tool
+            </p>
           </div>
         </div>
 
@@ -39,14 +41,14 @@ export function AppLayout({ children }: AppLayoutProps) {
             const isActive = location === item.href;
             const Icon = item.icon;
             return (
-              <Link 
-                key={item.href} 
+              <Link
+                key={item.href}
                 href={item.href}
                 className={cn(
                   "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-medium",
-                  isActive 
-                    ? "bg-primary text-primary-foreground shadow-md shadow-primary/20" 
-                    : "text-muted-foreground hover:bg-secondary hover:text-secondary-foreground"
+                  isActive
+                    ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
+                    : "text-muted-foreground hover:bg-secondary hover:text-secondary-foreground",
                 )}
               >
                 <Icon className="w-5 h-5" />
@@ -62,7 +64,9 @@ export function AppLayout({ children }: AppLayoutProps) {
               Dr
             </div>
             <div className="flex flex-col">
-              <span className="text-sm font-bold text-foreground leading-tight">Dr. Smith</span>
+              <span className="text-sm font-bold text-foreground leading-tight">
+                Dr. Smith
+              </span>
               <span className="text-xs text-muted-foreground">Cardiology</span>
             </div>
           </div>
@@ -71,9 +75,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 
       {/* Main Content */}
       <main className="flex-1 min-w-0 overflow-y-auto">
-        <div className="max-w-6xl mx-auto p-4 md:p-8 lg:p-10">
-          {children}
-        </div>
+        <div className="max-w-6xl mx-auto p-4 md:p-8 lg:p-10">{children}</div>
       </main>
     </div>
   );
