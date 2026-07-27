@@ -10,14 +10,31 @@ import { type AssessmentResponse } from "@shared/routes";
 
 // Form schema aligned with the backend insert schema
 const formSchema = z.object({
-  gender: z.enum(["Male", "Female", "Other"], { required_error: "Please select a gender" }),
-  age: z.coerce.number().min(1, "Age must be greater than 0").max(120, "Age is too high"),
+  gender: z.enum(["Male", "Female", "Other"], {
+    required_error: "Please select a gender",
+  }),
+  age: z.coerce
+    .number()
+    .min(1, "Age must be greater than 0")
+    .max(120, "Age is too high"),
   hypertension: z.boolean().default(false),
   heartDisease: z.boolean().default(false),
-  smokingHistory: z.enum(["never", "No Info", "current", "former", "ever", "not current"], { required_error: "Please select smoking history" }),
-  bmi: z.coerce.number().min(10, "BMI must be between 10 and 60").max(60, "BMI must be between 10 and 60"),
-  hba1cLevel: z.coerce.number().min(3, "HbA1c must be between 3 and 15").max(15, "HbA1c must be between 3 and 15"),
-  bloodGlucoseLevel: z.coerce.number().min(50, "Blood glucose must be between 50 and 400").max(400, "Blood glucose must be between 50 and 400"),
+  smokingHistory: z.enum(
+    ["never", "No Info", "current", "former", "ever", "not current"],
+    { required_error: "Please select smoking history" },
+  ),
+  bmi: z.coerce
+    .number()
+    .min(10, "BMI must be between 10 and 60")
+    .max(60, "BMI must be between 10 and 60"),
+  hba1cLevel: z.coerce
+    .number()
+    .min(3, "HbA1c must be between 3 and 15")
+    .max(15, "HbA1c must be between 3 and 15"),
+  bloodGlucoseLevel: z.coerce
+    .number()
+    .min(50, "Blood glucose must be between 50 and 400")
+    .max(400, "Blood glucose must be between 50 and 400"),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -26,7 +43,13 @@ export default function Dashboard() {
   const [result, setResult] = useState<AssessmentResponse | null>(null);
   const { mutate: createAssessment, isPending, error } = useCreateAssessment();
 
-  const { register, handleSubmit, formState: { errors }, watch, setValue } = useForm<FormData>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+    setValue,
+  } = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       hypertension: false,
@@ -36,16 +59,16 @@ export default function Dashboard() {
       age: undefined,
       bmi: undefined,
       hba1cLevel: undefined,
-      bloodGlucoseLevel: undefined
-    }
+      bloodGlucoseLevel: undefined,
+    },
   });
 
   const onSubmit = (data: FormData) => {
     createAssessment(data, {
       onSuccess: (data) => {
         setResult(data);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      },
     });
   };
 
@@ -60,15 +83,18 @@ export default function Dashboard() {
             New Assessment
           </h1>
           <p className="text-muted-foreground mt-2 text-lg max-w-2xl">
-            Enter patient details to run the preventive diabetes and cardiovascular risk model.
+            Enter patient details to run the preventive diabetes and
+            cardiovascular risk model.
           </p>
         </div>
 
         {result && (
           <div className="mb-12">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-foreground">Assessment Complete</h2>
-              <button 
+              <h2 className="text-xl font-bold text-foreground">
+                Assessment Complete
+              </h2>
+              <button
                 onClick={() => setResult(null)}
                 className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
               >
@@ -79,9 +105,13 @@ export default function Dashboard() {
           </div>
         )}
 
-        <div className={`transition-all duration-500 ${result ? 'opacity-50 pointer-events-none grayscale' : 'opacity-100'}`}>
-          <form onSubmit={handleSubmit(onSubmit)} className="bg-card rounded-2xl shadow-lg shadow-black/5 border border-border/60 p-6 md:p-8">
-            
+        <div
+          className={`transition-all duration-500 ${result ? "opacity-50 pointer-events-none grayscale" : "opacity-100"}`}
+        >
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="bg-card rounded-2xl shadow-lg shadow-black/5 border border-border/60 p-6 md:p-8"
+          >
             {error && (
               <div className="mb-6 p-4 bg-destructive/10 border border-destructive/20 rounded-xl flex items-start gap-3 text-destructive">
                 <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
@@ -91,49 +121,68 @@ export default function Dashboard() {
                 </div>
               </div>
             )}
-          {isPending && (
-            <div className="mb-6 animate-pulse space-y-4">
-            <div className="h-6 bg-muted rounded w-1/3"></div>
-            <div className="h-24 bg-muted rounded-xl"></div>
-            <div className="h-24 bg-muted rounded-xl"></div>
-           </div>
-          )}
+            {isPending && (
+              <div className="mb-6 animate-pulse space-y-4">
+                <div className="h-6 bg-muted rounded w-1/3"></div>
+                <div className="h-24 bg-muted rounded-xl"></div>
+                <div className="h-24 bg-muted rounded-xl"></div>
+              </div>
+            )}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Left Column: Demographics */}
               <div className="space-y-6">
                 <h3 className="font-bold text-lg border-b border-border/50 pb-2 flex items-center gap-2">
                   <UserCircle className="w-5 h-5 text-primary" /> Demographics
                 </h3>
-                
+
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-foreground">Gender</label>
+                  <label className="text-sm font-semibold text-foreground">
+                    Gender
+                  </label>
                   <div className="flex gap-3">
                     {["Male", "Female", "Other"].map((g) => (
                       <label key={g} className="flex-1 cursor-pointer">
-                        <input type="radio" value={g} {...register("gender")} className="peer sr-only" />
+                        <input
+                          type="radio"
+                          value={g}
+                          {...register("gender")}
+                          className="peer sr-only"
+                        />
                         <div className="text-center px-4 py-3 rounded-xl border-2 border-border bg-background peer-checked:border-primary peer-checked:bg-primary/5 hover:border-primary/50 transition-all font-medium text-sm text-muted-foreground peer-checked:text-primary">
                           {g}
                         </div>
                       </label>
                     ))}
                   </div>
-                  {errors.gender && <p className="text-sm text-destructive mt-1">{errors.gender.message}</p>}
+                  {errors.gender && (
+                    <p className="text-sm text-destructive mt-1">
+                      {errors.gender.message}
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-foreground">Age</label>
-                  <input 
-                    type="number" 
-                    {...register("age")} 
+                  <label className="text-sm font-semibold text-foreground">
+                    Age
+                  </label>
+                  <input
+                    type="number"
+                    {...register("age")}
                     className="w-full px-4 py-3 rounded-xl bg-background border-2 border-border focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-foreground"
                     placeholder="e.g. 45"
                   />
-                  {errors.age && <p className="text-sm text-destructive mt-1">{errors.age.message}</p>}
+                  {errors.age && (
+                    <p className="text-sm text-destructive mt-1">
+                      {errors.age.message}
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-foreground">Smoking History</label>
-                  <select 
+                  <label className="text-sm font-semibold text-foreground">
+                    Smoking History
+                  </label>
+                  <select
                     {...register("smokingHistory")}
                     className="w-full px-4 py-3 rounded-xl bg-background border-2 border-border focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-foreground appearance-none"
                   >
@@ -144,7 +193,11 @@ export default function Dashboard() {
                     <option value="ever">ever</option>
                     <option value="not current">not current</option>
                   </select>
-                  {errors.smokingHistory && <p className="text-sm text-destructive mt-1">{errors.smokingHistory.message}</p>}
+                  {errors.smokingHistory && (
+                    <p className="text-sm text-destructive mt-1">
+                      {errors.smokingHistory.message}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -156,59 +209,103 @@ export default function Dashboard() {
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-semibold text-foreground">BMI (kg/m²)</label>
-                    <input 
-                      type="number" step="0.1"
-                      {...register("bmi")} 
+                    <label className="text-sm font-semibold text-foreground">
+                      BMI (kg/m²)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      {...register("bmi")}
                       className="w-full px-4 py-3 rounded-xl bg-background border-2 border-border focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
                       placeholder="e.g. 25.0"
                     />
-                    {errors.bmi && <p className="text-sm text-destructive mt-1">{errors.bmi.message}</p>}
+                    {errors.bmi && (
+                      <p className="text-sm text-destructive mt-1">
+                        {errors.bmi.message}
+                      </p>
+                    )}
                   </div>
-                  
+
                   <div className="space-y-2">
-                    <label className="text-sm font-semibold text-foreground">HbA1c Level (%)</label>
-                    <input 
-                      type="number" step="0.1"
-                      {...register("hba1cLevel")} 
+                    <label className="text-sm font-semibold text-foreground">
+                      HbA1c Level (%)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      {...register("hba1cLevel")}
                       className="w-full px-4 py-3 rounded-xl bg-background border-2 border-border focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
                       placeholder="e.g. 5.7"
                     />
-                    {errors.hba1cLevel && <p className="text-sm text-destructive mt-1">{errors.hba1cLevel.message}</p>}
+                    {errors.hba1cLevel && (
+                      <p className="text-sm text-destructive mt-1">
+                        {errors.hba1cLevel.message}
+                      </p>
+                    )}
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-foreground">Blood Glucose Level (mg/dL)</label>
-                  <input 
-                    type="number" 
-                    {...register("bloodGlucoseLevel")} 
+                  <label className="text-sm font-semibold text-foreground">
+                    Blood Glucose Level (mg/dL)
+                  </label>
+                  <input
+                    type="number"
+                    {...register("bloodGlucoseLevel")}
                     className="w-full px-4 py-3 rounded-xl bg-background border-2 border-border focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
                     placeholder="e.g. 100"
                   />
-                  {errors.bloodGlucoseLevel && <p className="text-sm text-destructive mt-1">{errors.bloodGlucoseLevel.message}</p>}
+                  {errors.bloodGlucoseLevel && (
+                    <p className="text-sm text-destructive mt-1">
+                      {errors.bloodGlucoseLevel.message}
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-4 pt-2">
                   <label className="flex items-center justify-between p-4 rounded-xl border-2 border-border bg-background cursor-pointer hover:border-primary/50 transition-colors">
                     <div>
-                      <p className="font-semibold text-foreground">Hypertension</p>
-                      <p className="text-xs text-muted-foreground">Diagnosed high blood pressure</p>
+                      <p className="font-semibold text-foreground">
+                        Hypertension
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Diagnosed high blood pressure
+                      </p>
                     </div>
-                    <div className={`w-12 h-6 rounded-full transition-colors relative ${isHypertension ? 'bg-primary' : 'bg-muted-foreground/30'}`}>
-                      <input type="checkbox" {...register("hypertension")} className="sr-only" />
-                      <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${isHypertension ? 'translate-x-7' : 'translate-x-1'}`} />
+                    <div
+                      className={`w-12 h-6 rounded-full transition-colors relative ${isHypertension ? "bg-primary" : "bg-muted-foreground/30"}`}
+                    >
+                      <input
+                        type="checkbox"
+                        {...register("hypertension")}
+                        className="sr-only"
+                      />
+                      <div
+                        className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${isHypertension ? "translate-x-7" : "translate-x-1"}`}
+                      />
                     </div>
                   </label>
 
                   <label className="flex items-center justify-between p-4 rounded-xl border-2 border-border bg-background cursor-pointer hover:border-primary/50 transition-colors">
                     <div>
-                      <p className="font-semibold text-foreground">Heart Disease</p>
-                      <p className="text-xs text-muted-foreground">Prior cardiovascular conditions</p>
+                      <p className="font-semibold text-foreground">
+                        Heart Disease
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Prior cardiovascular conditions
+                      </p>
                     </div>
-                    <div className={`w-12 h-6 rounded-full transition-colors relative ${isHeartDisease ? 'bg-primary' : 'bg-muted-foreground/30'}`}>
-                      <input type="checkbox" {...register("heartDisease")} className="sr-only" />
-                      <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${isHeartDisease ? 'translate-x-7' : 'translate-x-1'}`} />
+                    <div
+                      className={`w-12 h-6 rounded-full transition-colors relative ${isHeartDisease ? "bg-primary" : "bg-muted-foreground/30"}`}
+                    >
+                      <input
+                        type="checkbox"
+                        {...register("heartDisease")}
+                        className="sr-only"
+                      />
+                      <div
+                        className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${isHeartDisease ? "translate-x-7" : "translate-x-1"}`}
+                      />
                     </div>
                   </label>
                 </div>
@@ -217,7 +314,9 @@ export default function Dashboard() {
 
             <div className="mt-6 p-4 bg-muted/30 rounded-xl border border-border/50">
               <p className="text-xs text-muted-foreground text-center italic">
-                This tool is a prototype for decision support only. It does not provide a medical diagnosis. Always consult a healthcare professional.
+                This tool is a prototype for decision support only. It does not
+                provide a medical diagnosis. Always consult a healthcare
+                professional.
               </p>
             </div>
 
@@ -246,4 +345,3 @@ export default function Dashboard() {
     </AppLayout>
   );
 }
-
