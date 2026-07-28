@@ -5,6 +5,7 @@ A full-stack web application for preventive diabetes risk assessment that combin
 ## Features
 
 ### Core Functionality
+
 - **Risk Assessment Form**: Input patient data including age, gender, hypertension, heart disease, smoking history, BMI, HbA1c level, and blood glucose level
 - **Dual-View Results**:
   - **Clinician View**: Displays precise risk percentage, top contributing factors with impact analysis, model confidence, and recommended follow-up actions
@@ -15,6 +16,7 @@ A full-stack web application for preventive diabetes risk assessment that combin
 ### Technical Architecture
 
 #### Frontend (`client/`)
+
 - React with TypeScript
 - TanStack Query for server state management
 - React Hook Form with Zod validation
@@ -23,12 +25,14 @@ A full-stack web application for preventive diabetes risk assessment that combin
 - Framer Motion for animations
 
 #### Backend (`server/`)
+
 - Express.js REST API
 - PostgreSQL database (via Drizzle ORM)
 - Python integration for ML predictions
 - Route validation with Zod schemas
 
 #### Machine Learning (`analyze.py`)
+
 - Logistic Regression model using scikit-learn
 - Feature engineering and preprocessing
 - StandardScaler for feature normalization
@@ -38,6 +42,7 @@ A full-stack web application for preventive diabetes risk assessment that combin
 ## Data Model
 
 ### Assessment Table
+
 - Patient demographics: gender, age
 - Medical history: hypertension, heart disease, smoking history
 - Clinical measurements: BMI, HbA1c level, blood glucose level
@@ -58,14 +63,17 @@ A full-stack web application for preventive diabetes risk assessment that combin
 ## Development
 
 ### Dependencies
+
 - **Node.js**: Express, TypeScript, Drizzle ORM
 - **Python**: pandas, numpy, scikit-learn
 - **React**: React 18, React Query, React Hook Form
 
 ### Database
+
 PostgreSQL with Drizzle ORM. Schema managed via `npm run db:push`.
 
 ### Running the Application
+
 The workflow "Start application" runs `npm run dev` which starts both the Express backend and Vite frontend on port 5000.
 
 ## Clinical Decision Support Workflow

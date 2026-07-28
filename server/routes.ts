@@ -14,7 +14,7 @@ async function seedDatabase() {
   const existing = await storage.getAssessments();
   if (existing.length === 0) {
     console.log("Seeding database with sample assessments...");
-    
+
     const samples = [
       {
         gender: "Male",
@@ -30,8 +30,12 @@ async function seedDatabase() {
         factors: [
           { name: "Age", impact: "positive", description: "Increases risk" },
           { name: "Bmi", impact: "negative", description: "Lowers risk" },
-          { name: "Hba1c Level", impact: "negative", description: "Lowers risk" }
-        ]
+          {
+            name: "Hba1c Level",
+            impact: "negative",
+            description: "Lowers risk",
+          },
+        ],
       },
       {
         gender: "Female",
@@ -45,10 +49,18 @@ async function seedDatabase() {
         riskScore: "48.7",
         riskCategory: "MODERATE",
         factors: [
-          { name: "Hba1c Level", impact: "positive", description: "Increases risk" },
+          {
+            name: "Hba1c Level",
+            impact: "positive",
+            description: "Increases risk",
+          },
           { name: "Bmi", impact: "positive", description: "Increases risk" },
-          { name: "Hypertension", impact: "positive", description: "Increases risk" }
-        ]
+          {
+            name: "Hypertension",
+            impact: "positive",
+            description: "Increases risk",
+          },
+        ],
       },
       {
         gender: "Male",
@@ -62,13 +74,25 @@ async function seedDatabase() {
         riskScore: "76.4",
         riskCategory: "HIGH",
         factors: [
-          { name: "Hba1c Level", impact: "positive", description: "Increases risk" },
-          { name: "Blood Glucose Level", impact: "positive", description: "Increases risk" },
-          { name: "Heart Disease", impact: "positive", description: "Increases risk" }
-        ]
-      }
+          {
+            name: "Hba1c Level",
+            impact: "positive",
+            description: "Increases risk",
+          },
+          {
+            name: "Blood Glucose Level",
+            impact: "positive",
+            description: "Increases risk",
+          },
+          {
+            name: "Heart Disease",
+            impact: "positive",
+            description: "Increases risk",
+          },
+        ],
+      },
     ];
-    
+
     for (const sample of samples) {
       await storage.createAssessment(sample);
     }
@@ -76,22 +100,27 @@ async function seedDatabase() {
   }
 }
 
-export async function registerRoutes(httpServer: Server, app: Express): Promise<Server> {
+export async function registerRoutes(
+  httpServer: Server,
+  app: Express,
+): Promise<Server> {
   // Seed database on startup
   seedDatabase().catch(console.error);
-  
+
   app.post(api.assessments.create.path, async (req, res) => {
     try {
       const input = api.assessments.create.input.parse(req.body);
-      
+
       // Save input to a temporary file to pass to the Python script
       const tempFile = `/tmp/${randomUUID()}.json`;
       writeFileSync(tempFile, JSON.stringify(input));
-      
+
       try {
         // Call Python script to perform the logistic regression analysis
-        const { stdout, stderr } = await execAsync(`python3 analyze.py predict_file ${tempFile}`);
-        
+        const { stdout, stderr } = await execAsync(
+          `python3 analyze.py predict_file ${tempFile}`,
+        );
+
         let prediction;
         try {
           prediction = JSON.parse(stdout.trim());
@@ -102,10 +131,11 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
           console.error("Failed to parse python output:", stdout, stderr);
           throw new Error("Failed to process prediction.");
         }
-        
+
         // Ensure non-diagnostic framing in response
-        prediction.disclaimer = "DISCLAIMER: This is a clinical decision support tool and is not a medical diagnosis. Please consult with a healthcare professional for clinical decisions.";
-        
+        prediction.disclaimer =
+          "DISCLAIMER: This is a clinical decision support tool and is not a medical diagnosis. Please consult with a healthcare professional for clinical decisions.";
+
         // Save the assessment to the database
         const assessment = await storage.createAssessment({
           ...input,
@@ -113,13 +143,15 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
           riskCategory: prediction.riskCategory,
           factors: prediction.factors,
           confidenceInterval: prediction.confidenceInterval,
-          modelConfidence: String(prediction.modelConfidence)
+          modelConfidence: String(prediction.modelConfidence),
         });
-        
+
         // Return both the DB assessment record and the rich prediction data (with advice)
         res.status(201).json({ ...assessment, prediction });
       } finally {
-        try { unlinkSync(tempFile); } catch (e) {}
+        try {
+          unlinkSync(tempFile);
+        } catch (e) {}
       }
     } catch (err) {
       if (err instanceof z.ZodError) {
