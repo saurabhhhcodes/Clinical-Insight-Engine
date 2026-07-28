@@ -10,17 +10,39 @@ export default function History() {
 
   const getRiskBadge = (category: string) => {
     switch (category?.toUpperCase()) {
-      case "LOW": return <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold tracking-wide">LOW</span>;
-      case "MODERATE": return <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-bold tracking-wide">MODERATE</span>;
-      case "HIGH": return <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold tracking-wide">HIGH</span>;
-      default: return <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-bold tracking-wide">{category}</span>;
+      case "LOW":
+        return (
+          <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold tracking-wide">
+            LOW
+          </span>
+        );
+      case "MODERATE":
+        return (
+          <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-bold tracking-wide">
+            MODERATE
+          </span>
+        );
+      case "HIGH":
+        return (
+          <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold tracking-wide">
+            HIGH
+          </span>
+        );
+      default:
+        return (
+          <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-bold tracking-wide">
+            {category}
+          </span>
+        );
     }
   };
 
-  const filteredAssessments = assessments?.filter(a => 
-    a.gender.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    a.riskCategory.toLowerCase().includes(searchTerm.toLowerCase())
-  ) || [];
+  const filteredAssessments =
+    assessments?.filter(
+      (a) =>
+        a.gender.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        a.riskCategory.toLowerCase().includes(searchTerm.toLowerCase()),
+    ) || [];
 
   return (
     <AppLayout>
@@ -37,9 +59,9 @@ export default function History() {
 
           <div className="relative">
             <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <input 
-              type="text" 
-              placeholder="Search history..." 
+            <input
+              type="text"
+              placeholder="Search history..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 pr-4 py-2.5 rounded-xl border border-border bg-card focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all w-full md:w-64"
@@ -61,9 +83,12 @@ export default function History() {
             <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center mb-4 text-muted-foreground">
               <Activity className="w-8 h-8" />
             </div>
-            <h3 className="text-xl font-bold text-foreground mb-2">No Assessments Found</h3>
+            <h3 className="text-xl font-bold text-foreground mb-2">
+              No Assessments Found
+            </h3>
             <p className="text-muted-foreground max-w-md">
-              There are no patient assessments matching your criteria. Go to the dashboard to create a new assessment.
+              There are no patient assessments matching your criteria. Go to the
+              dashboard to create a new assessment.
             </p>
           </div>
         ) : (
@@ -86,20 +111,38 @@ export default function History() {
                 </thead>
                 <tbody className="divide-y divide-border">
                   {filteredAssessments.map((assessment) => (
-                    <tr key={assessment.id} className="hover:bg-muted/30 transition-colors text-sm">
+                    <tr
+                      key={assessment.id}
+                      className="hover:bg-muted/30 transition-colors text-sm"
+                    >
                       <td className="p-4 whitespace-nowrap">
-                        {assessment.createdAt ? format(new Date(assessment.createdAt), 'MMM d, yyyy') : 'Unknown'}
+                        {assessment.createdAt
+                          ? format(
+                              new Date(assessment.createdAt),
+                              "MMM d, yyyy",
+                            )
+                          : "Unknown"}
                       </td>
                       <td className="p-4">{assessment.age}</td>
                       <td className="p-4 font-medium">{assessment.bmi}</td>
-                      <td className="p-4 font-medium">{assessment.hba1cLevel}%</td>
-                      <td className="p-4 font-medium">{assessment.bloodGlucoseLevel}</td>
-                      <td className="p-4">{assessment.hypertension ? 'Yes' : 'No'}</td>
-                      <td className="p-4">{assessment.heartDisease ? 'Yes' : 'No'}</td>
+                      <td className="p-4 font-medium">
+                        {assessment.hba1cLevel}%
+                      </td>
+                      <td className="p-4 font-medium">
+                        {assessment.bloodGlucoseLevel}
+                      </td>
+                      <td className="p-4">
+                        {assessment.hypertension ? "Yes" : "No"}
+                      </td>
+                      <td className="p-4">
+                        {assessment.heartDisease ? "Yes" : "No"}
+                      </td>
                       <td className="p-4">{assessment.smokingHistory}</td>
                       <td className="p-4">
                         <div className="font-bold flex flex-col">
-                          <span>{Number(assessment.riskScore).toFixed(1)}%</span>
+                          <span>
+                            {Number(assessment.riskScore).toFixed(1)}%
+                          </span>
                           {assessment.confidenceInterval && (
                             <span className="text-[10px] text-muted-foreground font-normal">
                               ({assessment.confidenceInterval})

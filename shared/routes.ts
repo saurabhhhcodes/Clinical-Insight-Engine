@@ -36,7 +36,10 @@ export const api = {
   },
 };
 
-export function buildUrl(path: string, params?: Record<string, string | number>): string {
+export function buildUrl(
+  path: string,
+  params?: Record<string, string | number>,
+): string {
   let url = path;
   if (params) {
     Object.entries(params).forEach(([key, value]) => {
@@ -49,5 +52,9 @@ export function buildUrl(path: string, params?: Record<string, string | number>)
 }
 
 export type AssessmentInput = z.infer<typeof api.assessments.create.input>;
-export type AssessmentResponse = z.infer<typeof api.assessments.create.responses[201]>;
-export type AssessmentsListResponse = z.infer<typeof api.assessments.list.responses[200]>;
+export type AssessmentResponse = z.infer<
+  (typeof api.assessments.create.responses)[201]
+>;
+export type AssessmentsListResponse = z.infer<
+  (typeof api.assessments.list.responses)[200]
+>;
