@@ -14,6 +14,7 @@ This document describes the Python-based data analysis and clinical decision sup
 ### 1. Load and Explore ✅
 
 The script loads the diabetes dataset and provides comprehensive exploratory analysis:
+
 - Dataset shape, columns, data types
 - Summary statistics for all numeric features
 - Missing value detection
@@ -22,6 +23,7 @@ The script loads the diabetes dataset and provides comprehensive exploratory ana
 ### 2. Data Cleaning & Preprocessing ✅
 
 Implemented cleaning strategies:
+
 - **Outlier handling**: Filters out unrealistic values based on medical thresholds
 - **Categorical encoding**:
   - Gender: Binary encoding (Male=1, Female=0)
@@ -32,6 +34,7 @@ Implemented cleaning strategies:
 ### 3. Model Building ✅
 
 Logistic Regression model with:
+
 - Balanced class weights to handle class imbalance
 - Standardized features for proper coefficient interpretation
 - Predicted probabilities (risk scores as percentages)
@@ -39,6 +42,7 @@ Logistic Regression model with:
 ### 4. Interpretation & Outputs ✅
 
 #### For Clinicians:
+
 - **Risk Probability**: Exact percentage (e.g., "23.5%")
 - **Top Contributing Factors**: 3-5 features with:
   - Feature name
@@ -51,6 +55,7 @@ Logistic Regression model with:
   - HIGH (>50%): Refer for diagnostic testing
 
 #### For Patients:
+
 - **Simplified Risk Category**: LOW/MODERATE/HIGH
 - **Plain Language Factors**:
   - "Your BMI is elevated"
@@ -64,6 +69,7 @@ Logistic Regression model with:
 ### 5. Visualizations ✅
 
 The web interface provides:
+
 - **Feature importance bar chart**: Displays coefficient magnitudes
 - **Risk distribution histogram**: Shows separation between diabetic and non-diabetic cases
 - **Individual factor contributions**: Diverging bar chart in clinician view
@@ -71,6 +77,7 @@ The web interface provides:
 ### 6. Workflow Documentation ✅
 
 The code includes:
+
 - Comprehensive comments explaining each step
 - Markdown-style documentation in this file
 - Clear function names and structure
@@ -92,6 +99,7 @@ python3 analyze.py
 ```
 
 This will:
+
 1. Generate synthetic data if `diabetes_dataset.csv` doesn't exist
 2. Clean and preprocess the data
 3. Train the logistic regression model
@@ -110,6 +118,7 @@ python3 analyze.py predict_file patient.json
 ```
 
 Output:
+
 ```json
 {
   "riskScore": 96.9,
@@ -192,6 +201,7 @@ If no dataset is provided, the script generates 1000 synthetic patient records w
 ### Data Quality
 
 The script handles:
+
 - Missing values (filters them out)
 - Unrealistic values:
   - BMI < 10 (physiologically impossible)
@@ -221,6 +231,7 @@ The Python script integrates seamlessly with the Node.js backend:
 ## References
 
 This implementation follows best practices from:
+
 - Clinical prediction models for diabetes screening (ADA guidelines)
 - Interpretable machine learning in healthcare
 - Human-AI collaboration in clinical workflows

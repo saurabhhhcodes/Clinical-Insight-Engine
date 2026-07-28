@@ -2,7 +2,9 @@
 ![Stars](https://img.shields.io/github/stars/gopaljilab/Clinical-Insight-Engine)
 ![Issues](https://img.shields.io/github/issues/gopaljilab/Clinical-Insight-Engine)
 ![Last Commit](https://img.shields.io/github/last-commit/gopaljilab/Clinical-Insight-Engine)
-# 🩺 Clinical Insight Engine  
+
+# 🩺 Clinical Insight Engine
+
 ## Clinical Decision Support for Preventive Diabetes Risk Assessment
 
 **Clinical Insight Engine** is a full-stack clinical decision support system designed to surface early diabetes risk signals from routine patient data.  
@@ -20,7 +22,9 @@ This system is intended for **educational and research purposes only** and does 
 ### 🔹 Core Functionality
 
 #### 🧾 Risk Assessment Form
+
 Inputs include:
+
 - Age, gender
 - Hypertension and heart disease status
 - Smoking history
@@ -31,21 +35,25 @@ Inputs include:
 #### 👥 Dual-View Results
 
 **Clinician View**
+
 - Exact risk percentage (0–100%)
 - Top contributing factors with impact analysis
 - Model confidence indicators
 - Suggested follow-up actions
 
 **Patient View**
+
 - Simplified risk category (**LOW / MODERATE / HIGH**)
 - Plain-language explanation of risk factors
 - Preventive lifestyle recommendations
 
 #### 🕒 Assessment History
+
 - Stores previous assessments with timestamps
 - Enables longitudinal tracking of patient risk
 
 #### 📊 Data Visualization
+
 - Interactive bar charts showing factor contributions
 - Available in clinician view for transparency
 
@@ -54,6 +62,7 @@ Inputs include:
 ## 🏗️ System Architecture
 
 ### Frontend (`client/`)
+
 - React + TypeScript
 - Vite for fast development
 - Tailwind CSS with dark mode support
@@ -63,12 +72,14 @@ Inputs include:
 - Framer Motion for animations
 
 ### Backend (`server/`)
+
 - Express.js REST API
 - PostgreSQL database via Drizzle ORM
 - Python integration for ML inference
 - Zod-based route and schema validation
 
 ### Machine Learning (`analyze.py`)
+
 - Logistic Regression (scikit-learn)
 - Feature engineering and preprocessing
 - StandardScaler for normalization
@@ -87,17 +98,20 @@ Inputs include:
 ## ⚙️ Installation & Setup
 
 ### 1️⃣ Clone the Repository
+
 ```bash
 git clone https://github.com/gopaljilab/Clinical-Insight-Engine.git
 cd Clinical-Insight-Engine
 ```
 
 ### 2️⃣ Install Node Dependencies
+
 ```bash
 npm install
 ```
 
 ### 3️⃣ Create Environment File
+
 Create a `.env` file in the project root:
 
 ```bash
@@ -109,6 +123,7 @@ Copy-Item .env.example .env
 ```
 
 If `.env.example` doesn't exist, create `.env` manually:
+
 ```env
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/clinical_insight_engine
 ```
@@ -116,6 +131,7 @@ DATABASE_URL=postgresql://postgres:postgres@localhost:5432/clinical_insight_engi
 ### 4️⃣ PostgreSQL Database Setup
 
 #### Linux (Ubuntu/Debian)
+
 ```bash
 # Install PostgreSQL
 sudo apt update
@@ -131,6 +147,7 @@ sudo -u postgres psql -c "CREATE DATABASE clinical_insight_engine;"
 ```
 
 #### macOS (Homebrew)
+
 ```bash
 # Install PostgreSQL
 brew install postgresql
@@ -144,6 +161,7 @@ psql postgres -c "CREATE DATABASE clinical_insight_engine;"
 ```
 
 #### Windows
+
 1. Download PostgreSQL from [postgresql.org](https://www.postgresql.org/download/windows/)
 2. Install with default settings (remember the password for `postgres` user)
 3. Open **SQL Shell (psql)** or **pgAdmin** and run:
@@ -154,11 +172,13 @@ CREATE DATABASE clinical_insight_engine;
 ```
 
 Or via PowerShell (if `psql` is in PATH):
+
 ```powershell
 psql -U postgres -d postgres -c "CREATE DATABASE clinical_insight_engine;"
 ```
 
 ### 5️⃣ Database Migration
+
 Create the required tables:
 
 ```bash
@@ -166,6 +186,7 @@ npm run db:push
 ```
 
 If the above doesn't work, try:
+
 ```bash
 npm run migrate
 # or
@@ -175,6 +196,7 @@ npm run db:migrate
 ### 6️⃣ Python Environment Setup
 
 #### Linux/macOS
+
 ```bash
 # Create virtual environment
 python3 -m venv .venv
@@ -190,6 +212,7 @@ pip install -r requirements.txt
 ```
 
 #### Windows (PowerShell)
+
 ```powershell
 # Create virtual environment
 py -m venv .venv
@@ -207,6 +230,7 @@ pip install -r requirements.txt
 ### 7️⃣ Dataset Preparation
 
 If dataset exists in project:
+
 ```bash
 # Linux/macOS
 cp attached_assets/diabetes_dataset.csv ./diabetes_dataset.csv
@@ -216,6 +240,7 @@ Copy-Item attached_assets/diabetes_dataset.csv ./diabetes_dataset.csv
 ```
 
 If dataset is missing, generate synthetic data:
+
 ```bash
 # Linux/macOS
 python3 -c "from analyze import create_synthetic_data; create_synthetic_data()"
@@ -227,12 +252,15 @@ py -c "from analyze import create_synthetic_data; create_synthetic_data()"
 ### 8️⃣ Start the Application
 
 #### Frontend (React + Vite)
+
 ```bash
 npm run dev
 ```
+
 Frontend runs at: `http://localhost:5173`
 
 #### ML Pipeline (Training)
+
 ```bash
 # Linux/macOS
 python3 analyze.py
@@ -242,6 +270,7 @@ py analyze.py
 ```
 
 #### Backend API (if separate)
+
 ```bash
 # Linux/macOS
 python3 main.py
@@ -257,6 +286,7 @@ py main.py
 Create a patient JSON file:
 
 #### Linux/macOS
+
 ```bash
 cat > patient.json << 'EOF'
 {
@@ -273,6 +303,7 @@ EOF
 ```
 
 #### Windows (PowerShell)
+
 ```powershell
 @'
 {
@@ -289,6 +320,7 @@ EOF
 ```
 
 Run prediction:
+
 ```bash
 # Linux/macOS
 python3 analyze.py predict_file patient.json
@@ -302,9 +334,11 @@ py analyze.py predict_file patient.json
 ## 🛑 Shutdown
 
 ### 1️⃣ Stop Development Server
+
 Press `Ctrl + C` in the terminal running `npm run dev`
 
 ### 2️⃣ Deactivate Python Environment
+
 ```bash
 # Linux/macOS
 deactivate
